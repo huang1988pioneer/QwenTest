@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_top">#171130</color>
+    <color name="bg_mid">#241436</color>
+    <color name="bg_bottom">#2D1B3D</color>
+    <color name="gold">#FFD75E</color>
+    <color name="text_default">#8F7FB0</color>
+    <color name="text_past">#5D4F80</color>
+    <color name="text_now">#FFFFFF</color>
+    <color name="subtitle">#C9B6E4</color>
+    <color name="avatar_border_dim">#4A3768</color>
+    <color name="player_bg">#CC140C28</color>
+</resources>

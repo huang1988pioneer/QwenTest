@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LyricsPlayer.MainWindow"
+        Title="最瞎結婚理由｜動態歌詞"
+        Width="500" Height="800" MinWidth="380" MinHeight="600"
+        FontFamily="Microsoft JhengHei, PingFang TC, sans-serif">
+    <DockPanel Background="#171130">
+        <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,24,0,10">
+            <TextBlock Text="最瞎結婚理由" HorizontalAlignment="Center" FontSize="32" FontWeight="Bold" Foreground="#FFD75E" />
+            <TextBlock Text="鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線" HorizontalAlignment="Center" FontSize="13" Foreground="#C9B6E4" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="18" Margin="0,14,0,0">
+                <StackPanel x:Name="AvatarFeng" Spacing="6" Opacity="0.5">
+                    <Border x:Name="BorderFeng" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
+                        <Image Source="avares://LyricsPlayer/Assets/feng.png" Stretch="UniformToFill" />
+                    </Border>
+                    <TextBlock Text="鋒兄" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
+                </StackPanel>
+                <StackPanel x:Name="AvatarTu" Spacing="6" Opacity="0.5">
+                    <Border x:Name="BorderTu" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
+                        <Image Source="avares://LyricsPlayer/Assets/tu.png" Stretch="UniformToFill" />
+                    </Border>
+                    <TextBlock Text="小塗" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
+                </StackPanel>
+                <StackPanel x:Name="AvatarYa" Spacing="6" Opacity="0.5">
+                    <Border x:Name="BorderYa" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
+                        <Image Source="avares://LyricsPlayer/Assets/ya.png" Stretch="UniformToFill" />
+                    </Border>
+                    <TextBlock Text="牙妹" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
+                </StackPanel>
+                <StackPanel x:Name="AvatarYu" Spacing="6" Opacity="0.5">
+                    <Border x:Name="BorderYu" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
+                        <Image Source="avares://LyricsPlayer/Assets/yu.png" Stretch="UniformToFill" />
+                    </Border>
+                    <TextBlock Text="魚妹" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="12,10">
+            <Button x:Name="PlayBtn" Content="▶" Width="44" Height="44" FontSize="16" />
+            <Slider x:Name="SeekSlider" Grid.Column="1" Minimum="0" Maximum="1" Value="0" Margin="12,0" VerticalAlignment="Center" />
+            <TextBlock x:Name="TimeLabel" Grid.Column="2" Text="0:00 / 0:00" FontSize="12" Foreground="#C9B6E4" VerticalAlignment="Center" />
+        </Grid>
+
+        <ScrollViewer x:Name="LyricsScroll" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="LyricsPanel" Margin="20,12,20,320" />
+        </ScrollViewer>
+    </DockPanel>
+</Window>

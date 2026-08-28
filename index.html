@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>最瞎結婚理由｜動態歌詞</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #171130, #241436 60%, #2d1b3d);
+    color: #f4ecff;
+    font-family: "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  header { text-align: center; padding: 48px 16px 8px; }
+  h1 {
+    margin: 0;
+    font-size: clamp(28px, 6vw, 44px);
+    color: #ffd75e;
+    text-shadow: 0 0 24px rgba(255, 215, 94, .35);
+  }
+  .sub { margin: 10px 0 0; color: #c9b6e4; }
+  .tip { margin: 6px 0 0; color: #7d6ba3; font-size: 12px; }
+  .cast { display: flex; justify-content: center; gap: 18px; padding: 22px 12px; }
+  .member {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: .5; transform: scale(.94); transition: .3s;
+  }
+  .member img {
+    width: 76px; height: 76px; border-radius: 50%; object-fit: cover;
+    border: 3px solid #4a3768; background: #241436;
+  }
+  .member span { font-size: 14px; }
+  .member.active { opacity: 1; transform: scale(1.06); }
+  .member.active img { border-color: #ffd75e; box-shadow: 0 0 18px rgba(255, 215, 94, .5); }
+  main { flex: 1; overflow-y: auto; width: 100%; max-width: 680px; margin: 0 auto; padding: 12px 20px 45vh; }
+  main p {
+    margin: 18px 0; text-align: center; cursor: pointer;
+    font-size: 18px; color: #8f7fb0; transition: .25s;
+  }
+  main p.past { color: #5d4f80; }
+  main p.now {
+    color: #fff; font-size: 24px; font-weight: 700;
+    text-shadow: 0 0 16px rgba(255, 215, 94, .6);
+  }
+  .player {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: rgba(20, 12, 40, .88); backdrop-filter: blur(8px);
+  }
+  #play {
+    width: 44px; height: 44px; border-radius: 50%; border: none;
+    background: #ffd75e; color: #241436; font-size: 17px; cursor: pointer;
+    flex: none;
+  }
+  #bar { flex: 1; height: 6px; background: #4a3768; border-radius: 3px; cursor: pointer; }
+  #fill { height: 100%; width: 0; background: linear-gradient(90deg, #ff6b81, #ffd75e); border-radius: 3px; }
+  #time { font-size: 12px; color: #c9b6e4; min-width: 88px; text-align: right; }
+  #sync {
+    border: 1px solid #4a3768; background: none; color: #c9b6e4;
+    border-radius: 16px; padding: 6px 12px; cursor: pointer; font-size: 12px; flex: none;
+  }
+  #sync.on { border-color: #ffd75e; color: #ffd75e; }
+  #syncHint {
+    position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
+    background: #3a2a55; border: 1px solid #ffd75e; color: #ffe9a8;
+    padding: 8px 14px; border-radius: 10px; font-size: 13px;
+    display: flex; gap: 12px; align-items: center; white-space: nowrap;
+  }
+  #syncHint[hidden] { display: none; }
+  #syncHint button {
+    border: none; background: #ffd75e; color: #241436;
+    border-radius: 8px; padding: 4px 10px; cursor: pointer; font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>最瞎結婚理由</h1>
+  <p class="sub">鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線</p>
+  <p class="tip">點歌詞可跳轉｜「校正時間」模式邊聽邊按空白鍵逐行微調，會自動記住</p>
+</header>
+
+<div class="cast">
+  <div class="member" id="m-feng"><img src="img/feng.png" alt="鋒兄"><span>鋒兄</span></div>
+  <div class="member" id="m-tu"><img src="img/tu.png" alt="小塗"><span>小塗</span></div>
+  <div class="member" id="m-ya"><img src="img/ya.png" alt="牙妹"><span>牙妹</span></div>
+  <div class="member" id="m-yu"><img src="img/yu.png" alt="魚妹"><span>魚妹</span></div>
+</div>
+
+<main id="lyrics"></main>
+
+<div id="syncHint" hidden>
+  <span id="syncText"></span>
+  <button id="stamp">蓋時間（空白）</button>
+  <button id="reset">重置</button>
+</div>
+
+<footer class="player">
+  <button id="play">▶</button>
+  <div id="bar"><div id="fill"></div></div>
+  <span id="time">0:00 / 0:00</span>
+  <button id="sync">校正時間</button>
+</footer>
+
+<audio id="audio" src="song.mp3"></audio>
+
+<script>
+const LINES = [
+  { t: 20.60, s: '鋒兄啊你說真的還假的' },
+  { t: 26.38, s: '小塗聽了都快笑翻了' },
+  { t: 32.30, s: '鋒兄說要結婚' },
+  { t: 35.10, s: '理由只有一個' },
+  { t: 38.23, s: '今彩五三九開獎那天' },
+  { t: 41.39, s: '頭獎號碼是牙妹給的' },
+  { t: 43.81, s: '看著獎金直直落' },
+  { t: 47.13, s: '心也跟著被收編' },
+  { t: 49.86, s: '他說這是命中注定' },
+  { t: 52.76, s: '不娶怎麼對得起這一連串的玄' },
+  { t: 58.76, s: '史上最瞎結婚理由' },
+  { t: 62.07, s: '今彩五三九牽紅線牽這麼兇' },
+  { t: 65.08, s: '一個牙妹一個魚妹' },
+  { t: 67.88, s: '號碼一簽兩人都中頭獎圈' },
+  { t: 70.65, s: '你說愛情是運氣還是數學題' },
+  { t: 76.47, s: '笑到流淚也只能說一句' },
+  { t: 79.43, s: '最瞎最瞎卻又有點甜蜜' },
+  { t: 88.10, s: '換到小塗這邊' },
+  { t: 90.78, s: '故事居然同一套' },
+  { t: 93.61, s: '今彩五三九播報畫面' },
+  { t: 96.95, s: '他整個人直接跳' },
+  { t: 99.47, s: '魚妹隨手寫的牌' },
+  { t: 102.36, s: '竟然全中好幾排' },
+  { t: 105.76, s: '他說財神爺都點名了' },
+  { t: 108.70, s: '不跟她走進禮堂實在太不應該' },
+  { t: 114.62, s: '鋒兄牽著牙妹' },
+  { t: 117.43, s: '小塗牽著魚妹' },
+  { t: 120.33, s: '喝喜酒的人一桌一桌' },
+  { t: 123.42, s: '還在笑這兩段緣' },
+  { t: 126.09, s: '最瞎結婚理由' },
+  { t: 129.10, s: '結果都開成頭獎' },
+  { t: 131.72, s: '如果幸福也能這樣瞎忙' },
+  { t: 135.01, s: '那我明天也去買一張' },
+];
+const KEY = 'zxjhly-times';
+
+const audio = document.getElementById('audio');
+const box = document.getElementById('lyrics');
+const playBtn = document.getElementById('play');
+const bar = document.getElementById('bar');
+const fill = document.getElementById('fill');
+const timeEl = document.getElementById('time');
+const syncBtn = document.getElementById('sync');
+const hint = document.getElementById('syncHint');
+const hintText = document.getElementById('syncText');
+const members = {
+  feng: document.getElementById('m-feng'),
+  tu: document.getElementById('m-tu'),
+  ya: document.getElementById('m-ya'),
+  yu: document.getElementById('m-yu'),
+};
+const NAMES = { feng: '鋒兄', tu: '小塗', ya: '牙妹', yu: '魚妹' };
+
+let times = LINES.map(l => l.t);
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if (Array.isArray(saved) && saved.length === times.length) times = saved;
+} catch {}
+
+LINES.forEach((l, i) => {
+  const p = document.createElement('p');
+  p.textContent = l.s;
+  p.onclick = () => { audio.currentTime = times[i]; audio.play(); };
+  box.appendChild(p);
+});
+const ps = [...box.children];
+
+let cur = -1, syncing = false, syncIdx = 0;
+
+function fmt(s) {
+  s = Math.max(0, Math.floor(s || 0));
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+function update() {
+  const t = audio.currentTime;
+  let c = -1;
+  for (let i = 0; i < times.length; i++) { if (t >= times[i]) c = i; else break; }
+  if (c !== cur) {
+    cur = c;
+    ps.forEach((p, i) => {
+      p.classList.toggle('now', i === c);
+      p.classList.toggle('past', i < c);
+    });
+    const line = c >= 0 ? LINES[c].s : '';
+    for (const k in members) members[k].classList.toggle('active', line.includes(NAMES[k]));
+    if (c >= 0) ps[c].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  fill.style.width = (audio.duration ? t / audio.duration * 100 : 0) + '%';
+  timeEl.textContent = fmt(t) + ' / ' + fmt(audio.duration);
+}
+(function loop() { update(); requestAnimationFrame(loop); })();
+audio.addEventListener('timeupdate', update);
+audio.addEventListener('seeked', update);
+
+playBtn.onclick = () => audio.paused ? audio.play() : audio.pause();
+audio.onplay = () => playBtn.textContent = '⏸';
+audio.onpause = () => playBtn.textContent = '▶';
+
+bar.onclick = e => {
+  const r = bar.getBoundingClientRect();
+  audio.currentTime = (e.clientX - r.left) / r.width * (audio.duration || 0);
+};
+
+function save() { localStorage.setItem(KEY, JSON.stringify(times)); }
+function updateHint() {
+  hintText.textContent = syncing
+    ? '校正模式｜按空白為第 ' + (syncIdx + 1) + ' / ' + times.length + ' 行蓋上目前時間（Esc 結束）'
+    : '';
+}
+
+syncBtn.onclick = () => {
+  syncing = !syncing;
+  syncIdx = 0;
+  syncBtn.classList.toggle('on', syncing);
+  syncBtn.textContent = syncing ? '校正中…' : '校正時間';
+  hint.hidden = !syncing;
+  updateHint();
+};
+
+function stamp() {
+  if (!syncing || syncIdx >= times.length) return;
+  times[syncIdx] = Math.round(audio.currentTime * 10) / 10;
+  syncIdx++;
+  save();
+  updateHint();
+}
+document.getElementById('stamp').onclick = stamp;
+document.getElementById('reset').onclick = () => {
+  localStorage.removeItem(KEY);
+  times = LINES.map(l => l.t);
+  syncIdx = 0;
+  updateHint();
+};
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    syncing ? stamp() : (audio.paused ? audio.play() : audio.pause());
+  }
+  if (e.code === 'Escape' && syncing) syncBtn.onclick();
+});
+</script>
+</body>
+</html>

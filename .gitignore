@@ -1,0 +1,6 @@
+bin/
+obj/
+.gradle/
+build/
+.idea/
+local.properties
