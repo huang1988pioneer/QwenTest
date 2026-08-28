@@ -18,12 +18,17 @@ public partial class MainWindow : Window
     private static readonly IBrush FutureBrush = new SolidColorBrush(Color.Parse("#8F7FB0"));
     private static readonly IBrush ActiveBorder = new SolidColorBrush(Color.Parse("#FFD75E"));
     private static readonly IBrush IdleBorder = new SolidColorBrush(Color.Parse("#4A3768"));
+    private static readonly IBrush TabIdleBackground = new SolidColorBrush(Color.Parse("#2A1C48"));
+    private static readonly IBrush TabIdleForeground = new SolidColorBrush(Color.Parse("#C9B6E4"));
+    private static readonly IBrush TabActiveForeground = new SolidColorBrush(Color.Parse("#241436"));
 
     private AudioFileReader? _reader;
     private WaveOutEvent? _output;
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(100) };
     private readonly List<TextBlock> _lyricBlocks = new();
     private readonly Dictionary<string, (StackPanel Panel, Border Border)> _avatars = new();
+    private Song _song = LyricsData.Songs[0];
+    private int _songIndex = -1;
     private int _currentLine = -1;
     private bool _dragging;
 
@@ -31,41 +36,13 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        foreach (var line in LyricsData.Lines)
-        {
-            var tb = new TextBlock
-            {
-                Text = line.Text,
-                TextAlignment = TextAlignment.Center,
-                Foreground = FutureBrush,
-                FontSize = 18,
-                Margin = new Thickness(0, 9),
-                Cursor = new Cursor(StandardCursorType.Hand),
-            };
-            tb.PointerPressed += (_, _) => { SeekTo(line.Time, true); Update(); };
-            LyricsPanel.Children.Add(tb);
-            _lyricBlocks.Add(tb);
-        }
-
         _avatars["鋒兄"] = (AvatarFeng, BorderFeng);
         _avatars["小塗"] = (AvatarTu, BorderTu);
         _avatars["牙妹"] = (AvatarYa, BorderYa);
         _avatars["魚妹"] = (AvatarYu, BorderYu);
 
-        try
-        {
-            var path = Path.Combine(AppContext.BaseDirectory, "Assets", "song.mp3");
-            _reader = new AudioFileReader(path);
-            _output = new WaveOutEvent();
-            _output.Init(_reader);
-            _output.PlaybackStopped += OnPlaybackStopped;
-            SeekSlider.Maximum = _reader.TotalTime.TotalSeconds;
-        }
-        catch (Exception)
-        {
-            TimeLabel.Text = "找不到 Assets/song.mp3";
-            PlayBtn.IsEnabled = false;
-        }
+        TabSong1.Click += (_, _) => LoadSong(0);
+        TabSong2.Click += (_, _) => LoadSong(1);
 
         PlayBtn.Click += (_, _) => TogglePlay();
 
@@ -83,6 +60,85 @@ public partial class MainWindow : Window
             _output?.Dispose();
             _reader?.Dispose();
         };
+
+        LoadSong(0);
+    }
+
+    private void LoadSong(int index)
+    {
+        if (index == _songIndex) return;
+        _songIndex = index;
+        _song = LyricsData.Songs[index];
+
+        if (_output is not null)
+        {
+            _output.PlaybackStopped -= OnPlaybackStopped;
+            _output.Stop();
+            _output.Dispose();
+            _output = null;
+        }
+        _reader?.Dispose();
+        _reader = null;
+        PlayBtn.Content = "▶";
+
+        TitleText.Text = _song.Title;
+        SubtitleText.Text = _song.Subtitle;
+        Title = $"{_song.Title}｜動態歌詞";
+        StyleTab(TabSong1, index == 0);
+        StyleTab(TabSong2, index == 1);
+
+        LyricsPanel.Children.Clear();
+        _lyricBlocks.Clear();
+        foreach (var line in _song.Lines)
+        {
+            var tb = new TextBlock
+            {
+                Text = line.Text,
+                TextAlignment = TextAlignment.Center,
+                Foreground = FutureBrush,
+                FontSize = 18,
+                Margin = new Thickness(0, 9),
+                Cursor = new Cursor(StandardCursorType.Hand),
+            };
+            tb.PointerPressed += (_, _) => { SeekTo(line.Time, true); Update(); };
+            LyricsPanel.Children.Add(tb);
+            _lyricBlocks.Add(tb);
+        }
+        _currentLine = -1;
+        LyricsScroll.Offset = new Vector(0, 0);
+
+        foreach (var kv in _avatars)
+        {
+            kv.Value.Panel.Opacity = 0.5;
+            kv.Value.Border.BorderBrush = IdleBorder;
+        }
+
+        try
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "Assets", _song.AudioFile);
+            _reader = new AudioFileReader(path);
+            _output = new WaveOutEvent();
+            _output.Init(_reader);
+            _output.PlaybackStopped += OnPlaybackStopped;
+            SeekSlider.Maximum = _reader.TotalTime.TotalSeconds;
+            SeekSlider.Value = 0;
+            PlayBtn.IsEnabled = true;
+        }
+        catch (Exception)
+        {
+            TimeLabel.Text = $"找不到 Assets/{_song.AudioFile}";
+            SeekSlider.Maximum = 1;
+            SeekSlider.Value = 0;
+            PlayBtn.IsEnabled = false;
+        }
+    }
+
+    private static void StyleTab(Button tab, bool active)
+    {
+        tab.Background = active ? ActiveBorder : TabIdleBackground;
+        tab.Foreground = active ? TabActiveForeground : TabIdleForeground;
+        tab.BorderBrush = active ? ActiveBorder : IdleBorder;
+        tab.FontWeight = active ? FontWeight.Bold : FontWeight.Regular;
     }
 
     private void TogglePlay()
@@ -128,9 +184,9 @@ public partial class MainWindow : Window
         var t = _reader.CurrentTime.TotalSeconds;
 
         var c = -1;
-        for (var i = 0; i < LyricsData.Lines.Length; i++)
+        for (var i = 0; i < _song.Lines.Count; i++)
         {
-            if (t >= LyricsData.Lines[i].Time) c = i;
+            if (t >= _song.Lines[i].Time) c = i;
             else break;
         }
 
@@ -154,10 +210,17 @@ public partial class MainWindow : Window
                 }
             }
 
-            var line = c >= 0 ? LyricsData.Lines[c].Text : "";
+            var line = c >= 0 ? _song.Lines[c].Text : "";
+            var allActive = false;
+            foreach (var w in _song.AllWords)
+            {
+                if (line.Contains(w)) { allActive = true; break; }
+            }
             foreach (var kv in _avatars)
             {
-                var active = line.Contains(kv.Key);
+                var active = allActive
+                    || (_song.AvatarNames.TryGetValue(kv.Key, out var name) && line.Contains(name))
+                    || (_song.CharTriggers.TryGetValue(kv.Key, out var ch) && line.Contains(ch));
                 kv.Value.Panel.Opacity = active ? 1 : 0.5;
                 kv.Value.Border.BorderBrush = active ? ActiveBorder : IdleBorder;
             }

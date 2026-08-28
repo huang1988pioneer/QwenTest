@@ -23,6 +23,8 @@ class MainActivity : Activity() {
 
     private lateinit var player: MediaPlayer
     private var prepared = false
+    private var songIndex = -1
+    private lateinit var song: Song
     private var currentLine = -1
     private var dragging = false
 
@@ -39,6 +41,10 @@ class MainActivity : Activity() {
     private lateinit var seekBar: SeekBar
     private lateinit var timeLabel: TextView
     private lateinit var playBtn: Button
+    private lateinit var songTitle: TextView
+    private lateinit var songSubtitle: TextView
+    private lateinit var tabSong1: Button
+    private lateinit var tabSong2: Button
     private val avatars = LinkedHashMap<String, ImageView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +56,10 @@ class MainActivity : Activity() {
         seekBar = findViewById(R.id.seekBar)
         timeLabel = findViewById(R.id.timeLabel)
         playBtn = findViewById(R.id.playBtn)
+        songTitle = findViewById(R.id.songTitle)
+        songSubtitle = findViewById(R.id.songSubtitle)
+        tabSong1 = findViewById(R.id.tabSong1)
+        tabSong2 = findViewById(R.id.tabSong2)
 
         avatars["avatar_feng"] = findViewById(R.id.avatar_feng)
         avatars["avatar_tu"] = findViewById(R.id.avatar_tu)
@@ -62,43 +72,10 @@ class MainActivity : Activity() {
                 }
             }
             iv.clipToOutline = true
-            setAvatarState(key, false)
         }
 
-        for ((i, line) in LyricsData.lines.withIndex()) {
-            val tv = TextView(this)
-            tv.text = line.text
-            tv.gravity = Gravity.CENTER
-            tv.setTextColor(Color.parseColor("#8F7FB0"))
-            tv.textSize = 18f
-            tv.setPadding(0, dp(9), 0, dp(9))
-            tv.setOnClickListener {
-                if (!prepared) return@setOnClickListener
-                player.seekTo(LyricsData.lines[i].timeMs)
-                if (!player.isPlaying) player.start()
-            }
-            lyricsContainer.addView(tv)
-        }
-
-        try {
-            player = MediaPlayer()
-            val afd = assets.openFd("song.mp3")
-            player.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
-            afd.close()
-            player.setOnPreparedListener {
-                prepared = true
-                seekBar.max = player.duration
-                handler.post(tick)
-            }
-            player.setOnCompletionListener {
-                it.seekTo(0)
-                it.pause()
-            }
-            player.prepareAsync()
-        } catch (e: Exception) {
-            timeLabel.text = "找不到 song.mp3"
-            playBtn.isEnabled = false
-        }
+        tabSong1.setOnClickListener { loadSong(0) }
+        tabSong2.setOnClickListener { loadSong(1) }
 
         playBtn.setOnClickListener {
             if (!prepared) return@setOnClickListener
@@ -113,14 +90,88 @@ class MainActivity : Activity() {
                 if (prepared) player.seekTo(sb?.progress ?: 0)
             }
         })
+
+        loadSong(0)
+    }
+
+    private fun loadSong(index: Int) {
+        if (index == songIndex) return
+        songIndex = index
+        song = LyricsData.songs[index]
+
+        prepared = false
+        handler.removeCallbacks(tick)
+        playBtn.text = "▶"
+        currentLine = -1
+        dragging = false
+        seekBar.progress = 0
+        timeLabel.text = "0:00 / 0:00"
+
+        songTitle.text = song.title
+        songSubtitle.text = song.subtitle
+        styleTab(tabSong1, index == 0)
+        styleTab(tabSong2, index == 1)
+
+        lyricsContainer.removeAllViews()
+        for ((i, line) in song.lines.withIndex()) {
+            val tv = TextView(this)
+            tv.text = line.text
+            tv.gravity = Gravity.CENTER
+            tv.setTextColor(Color.parseColor("#8F7FB0"))
+            tv.textSize = 18f
+            tv.setPadding(0, dp(9), 0, dp(9))
+            tv.setOnClickListener {
+                if (!prepared) return@setOnClickListener
+                player.seekTo(song.lines[i].timeMs)
+                if (!player.isPlaying) player.start()
+            }
+            lyricsContainer.addView(tv)
+        }
+        lyricsScroll.scrollTo(0, 0)
+        for ((key, _) in avatars) setAvatarState(key, false)
+
+        try {
+            if (!::player.isInitialized) {
+                player = MediaPlayer()
+                player.setOnCompletionListener {
+                    it.seekTo(0)
+                    it.pause()
+                }
+            } else {
+                player.reset()
+            }
+            val afd = assets.openFd(song.audioFile)
+            player.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+            afd.close()
+            player.setOnPreparedListener {
+                prepared = true
+                seekBar.max = player.duration
+                handler.post(tick)
+            }
+            player.prepareAsync()
+            playBtn.isEnabled = true
+        } catch (e: Exception) {
+            timeLabel.text = "找不到 ${song.audioFile}"
+            playBtn.isEnabled = false
+        }
+    }
+
+    private fun styleTab(btn: Button, active: Boolean) {
+        btn.background = GradientDrawable().apply {
+            cornerRadius = dp(16).toFloat()
+            setColor(Color.parseColor(if (active) "#FFD75E" else "#2A1C48"))
+            setStroke(dp(1), Color.parseColor(if (active) "#FFD75E" else "#4A3768"))
+        }
+        btn.setTextColor(Color.parseColor(if (active) "#241436" else "#C9B6E4"))
+        btn.setTypeface(null, if (active) Typeface.BOLD else Typeface.NORMAL)
     }
 
     private fun update() {
         if (!prepared) return
         val pos = player.currentPosition
         var c = -1
-        for (i in LyricsData.lines.indices) {
-            if (pos >= LyricsData.lines[i].timeMs) c = i else break
+        for (i in song.lines.indices) {
+            if (pos >= song.lines[i].timeMs) c = i else break
         }
         if (c != currentLine) {
             currentLine = c
@@ -157,8 +208,14 @@ class MainActivity : Activity() {
     }
 
     private fun lightAvatars() {
-        val text = if (currentLine >= 0) LyricsData.lines[currentLine].text else ""
-        for ((key, name) in LyricsData.characterNames) setAvatarState(key, text.contains(name))
+        val text = if (currentLine >= 0) song.lines[currentLine].text else ""
+        val all = song.allWords.any { text.contains(it) }
+        for ((key, _) in avatars) {
+            val name = song.characterNames[key]
+            val ch = song.charTriggers[key]
+            val active = all || (name != null && text.contains(name)) || (ch != null && text.contains(ch))
+            setAvatarState(key, active)
+        }
     }
 
     private fun setAvatarState(key: String, active: Boolean) {

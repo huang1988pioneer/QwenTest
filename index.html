@@ -16,7 +16,14 @@
     flex-direction: column;
     overflow: hidden;
   }
-  header { text-align: center; padding: 48px 16px 8px; }
+  header { text-align: center; padding: 40px 16px 8px; }
+  .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; }
+  .tab {
+    border: 1px solid #4a3768; background: #2a1c48; color: #c9b6e4;
+    border-radius: 18px; padding: 7px 18px; cursor: pointer; font-size: 14px;
+    font-family: inherit; transition: .2s;
+  }
+  .tab.active { background: #ffd75e; border-color: #ffd75e; color: #241436; font-weight: 700; }
   h1 {
     margin: 0;
     font-size: clamp(28px, 6vw, 44px);
@@ -80,8 +87,12 @@
 </head>
 <body>
 <header>
-  <h1>最瞎結婚理由</h1>
-  <p class="sub">鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線</p>
+  <div class="tabs">
+    <button class="tab active" id="tab-0">最瞎結婚理由</button>
+    <button class="tab" id="tab-1">鋒塗力百年夢</button>
+  </div>
+  <h1 id="title">最瞎結婚理由</h1>
+  <p class="sub" id="subtitle">鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線</p>
   <p class="tip">點歌詞可跳轉｜「校正時間」模式邊聽邊按空白鍵逐行微調，會自動記住</p>
 </header>
 
@@ -107,45 +118,96 @@
   <button id="sync">校正時間</button>
 </footer>
 
-<audio id="audio" src="song.mp3"></audio>
+<audio id="audio" src="song1.mp3"></audio>
 
 <script>
-const LINES = [
-  { t: 20.60, s: '鋒兄啊你說真的還假的' },
-  { t: 26.38, s: '小塗聽了都快笑翻了' },
-  { t: 32.30, s: '鋒兄說要結婚' },
-  { t: 35.10, s: '理由只有一個' },
-  { t: 38.23, s: '今彩五三九開獎那天' },
-  { t: 41.39, s: '頭獎號碼是牙妹給的' },
-  { t: 43.81, s: '看著獎金直直落' },
-  { t: 47.13, s: '心也跟著被收編' },
-  { t: 49.86, s: '他說這是命中注定' },
-  { t: 52.76, s: '不娶怎麼對得起這一連串的玄' },
-  { t: 58.76, s: '史上最瞎結婚理由' },
-  { t: 62.07, s: '今彩五三九牽紅線牽這麼兇' },
-  { t: 65.08, s: '一個牙妹一個魚妹' },
-  { t: 67.88, s: '號碼一簽兩人都中頭獎圈' },
-  { t: 70.65, s: '你說愛情是運氣還是數學題' },
-  { t: 76.47, s: '笑到流淚也只能說一句' },
-  { t: 79.43, s: '最瞎最瞎卻又有點甜蜜' },
-  { t: 88.10, s: '換到小塗這邊' },
-  { t: 90.78, s: '故事居然同一套' },
-  { t: 93.61, s: '今彩五三九播報畫面' },
-  { t: 96.95, s: '他整個人直接跳' },
-  { t: 99.47, s: '魚妹隨手寫的牌' },
-  { t: 102.36, s: '竟然全中好幾排' },
-  { t: 105.76, s: '他說財神爺都點名了' },
-  { t: 108.70, s: '不跟她走進禮堂實在太不應該' },
-  { t: 114.62, s: '鋒兄牽著牙妹' },
-  { t: 117.43, s: '小塗牽著魚妹' },
-  { t: 120.33, s: '喝喜酒的人一桌一桌' },
-  { t: 123.42, s: '還在笑這兩段緣' },
-  { t: 126.09, s: '最瞎結婚理由' },
-  { t: 129.10, s: '結果都開成頭獎' },
-  { t: 131.72, s: '如果幸福也能這樣瞎忙' },
-  { t: 135.01, s: '那我明天也去買一張' },
+const SONGS = [
+  {
+    id: 'zxjhly',
+    title: '最瞎結婚理由',
+    sub: '鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線',
+    src: 'song1.mp3',
+    names: { feng: '鋒兄', tu: '小塗', ya: '牙妹', yu: '魚妹' },
+    allWords: ['結婚', '今彩五三九', '命中注定'],
+    lines: [
+      { t: 20.60, s: '鋒兄啊你說真的還假的' },
+      { t: 26.38, s: '小塗聽了都快笑翻了' },
+      { t: 32.30, s: '鋒兄說要結婚' },
+      { t: 35.10, s: '理由只有一個' },
+      { t: 38.23, s: '今彩五三九開獎那天' },
+      { t: 41.39, s: '頭獎號碼是牙妹給的' },
+      { t: 43.81, s: '看著獎金直直落' },
+      { t: 47.13, s: '心也跟著被收編' },
+      { t: 49.86, s: '他說這是命中注定' },
+      { t: 52.76, s: '不娶怎麼對得起這一連串的玄' },
+      { t: 58.76, s: '史上最瞎結婚理由' },
+      { t: 62.07, s: '今彩五三九牽紅線牽這麼兇' },
+      { t: 65.08, s: '一個牙妹一個魚妹' },
+      { t: 67.88, s: '號碼一簽兩人都中頭獎圈' },
+      { t: 70.65, s: '你說愛情是運氣還是數學題' },
+      { t: 76.47, s: '笑到流淚也只能說一句' },
+      { t: 79.43, s: '最瞎最瞎卻又有點甜蜜' },
+      { t: 88.10, s: '換到小塗這邊' },
+      { t: 90.78, s: '故事居然同一套' },
+      { t: 93.61, s: '今彩五三九播報畫面' },
+      { t: 96.95, s: '他整個人直接跳' },
+      { t: 99.47, s: '魚妹隨手寫的牌' },
+      { t: 102.36, s: '竟然全中好幾排' },
+      { t: 105.76, s: '他說財神爺都點名了' },
+      { t: 108.70, s: '不跟她走進禮堂實在太不應該' },
+      { t: 114.62, s: '鋒兄牽著牙妹' },
+      { t: 117.43, s: '小塗牽著魚妹' },
+      { t: 120.33, s: '喝喜酒的人一桌一桌' },
+      { t: 123.42, s: '還在笑這兩段緣' },
+      { t: 126.09, s: '最瞎結婚理由' },
+      { t: 129.10, s: '結果都開成頭獎' },
+      { t: 131.72, s: '如果幸福也能這樣瞎忙' },
+      { t: 135.01, s: '那我明天也去買一張' },
+    ],
+  },
+  {
+    id: 'ftlbnm',
+    title: '鋒塗力百年夢',
+    sub: '鋒兄 × 塗哥｜資訊 × 文化 × 水電科技',
+    src: 'song2.mp3',
+    names: { feng: '鋒兄', tu: '塗哥' },
+    allWords: ['鋒塗力'],
+    chars: { feng: '鋒', tu: '塗' },
+    lines: [
+      { t: 10.46, s: '鋒兄一個念頭' },
+      { t: 11.51, s: '塗哥一起出手' },
+      { t: 12.61, s: '一張桌 一枝筆' },
+      { t: 13.99, s: '畫出未來藍圖走' },
+      { t: 15.36, s: '資訊亮起燈火' },
+      { t: 16.73, s: '文化寫進生活' },
+      { t: 17.86, s: '水電科技串起來' },
+      { t: 18.93, s: '一條路 三個夢同軌' },
+      { t: 20.22, s: '鋒塗力鋒塗力 一起拚下去' },
+      { t: 23.67, s: '百年企業心擔起' },
+      { t: 26.25, s: '今天種的夢 明天變成你福氣' },
+      { t: 29.73, s: '鋒塗力 鋒塗力 就在你身邊一起前進' },
+      { t: 39.37, s: '螢幕後的溫度 字句裡的態度' },
+      { t: 41.51, s: '每一條線 每一支螺絲' },
+      { t: 42.81, s: '都藏著職人的堅固' },
+      { t: 44.27, s: '資訊讓世界接軌' },
+      { t: 45.62, s: '文化替城市發揮' },
+      { t: 46.79, s: '水電科技打底座' },
+      { t: 47.78, s: '安全舒適住進你家裡' },
+      { t: 49.30, s: '鋒塗力鋒塗力 一起拚下去' },
+      { t: 53.01, s: '百年企業心擔起' },
+      { t: 55.60, s: '今天種的夢 明天變成你福氣' },
+      { t: 58.64, s: '鋒塗力 鋒塗力 就在你身邊一起前進' },
+      { t: 67.70, s: '一個鋒 一個塗' },
+      { t: 69.19, s: '名字寫進版圖' },
+      { t: 70.20, s: '從這里 到全國' },
+      { t: 71.75, s: '一步一步走得穩固' },
+      { t: 78.01, s: '鋒塗力鋒塗力 一起拚下去' },
+      { t: 81.82, s: '百年企業心擔起' },
+      { t: 84.69, s: '今天種的夢 明天變成你福氣' },
+      { t: 87.71, s: '鋒塗力 鋒塗力 大家作伙向著未來前進' },
+    ],
+  },
 ];
-const KEY = 'zxjhly-times';
 
 const audio = document.getElementById('audio');
 const box = document.getElementById('lyrics');
@@ -156,34 +218,65 @@ const timeEl = document.getElementById('time');
 const syncBtn = document.getElementById('sync');
 const hint = document.getElementById('syncHint');
 const hintText = document.getElementById('syncText');
+const titleEl = document.getElementById('title');
+const subEl = document.getElementById('subtitle');
+const tabs = [document.getElementById('tab-0'), document.getElementById('tab-1')];
 const members = {
   feng: document.getElementById('m-feng'),
   tu: document.getElementById('m-tu'),
   ya: document.getElementById('m-ya'),
   yu: document.getElementById('m-yu'),
 };
-const NAMES = { feng: '鋒兄', tu: '小塗', ya: '牙妹', yu: '魚妹' };
 
-let times = LINES.map(l => l.t);
-try {
-  const saved = JSON.parse(localStorage.getItem(KEY));
-  if (Array.isArray(saved) && saved.length === times.length) times = saved;
-} catch {}
-
-LINES.forEach((l, i) => {
-  const p = document.createElement('p');
-  p.textContent = l.s;
-  p.onclick = () => { audio.currentTime = times[i]; audio.play(); };
-  box.appendChild(p);
-});
-const ps = [...box.children];
-
+let song = null, times = [], ps = [];
 let cur = -1, syncing = false, syncIdx = 0;
 
 function fmt(s) {
   s = Math.max(0, Math.floor(s || 0));
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
+
+function loadSong(idx) {
+  const s = SONGS[idx];
+  if (song === s && audio.src.endsWith(s.src)) return;
+  song = s;
+  audio.pause();
+  playBtn.textContent = '▶';
+  syncing = false; syncIdx = 0;
+  syncBtn.classList.remove('on');
+  syncBtn.textContent = '校正時間';
+  hint.hidden = true;
+
+  titleEl.textContent = s.title;
+  subEl.textContent = s.sub;
+  document.title = s.title + '｜動態歌詞';
+  tabs.forEach((b, i) => b.classList.toggle('active', SONGS[i] === s));
+
+  times = s.lines.map(l => l.t);
+  try {
+    const saved = JSON.parse(localStorage.getItem(s.id + '-times'));
+    if (Array.isArray(saved) && saved.length === times.length) times = saved;
+  } catch {}
+
+  box.innerHTML = '';
+  ps = s.lines.map((l, i) => {
+    const p = document.createElement('p');
+    p.textContent = l.s;
+    p.onclick = () => { audio.currentTime = times[i]; audio.play(); };
+    box.appendChild(p);
+    return p;
+  });
+  cur = -1;
+
+  audio.src = s.src;
+  fill.style.width = '0';
+  timeEl.textContent = '0:00 / 0:00';
+  box.scrollTop = 0;
+  for (const k in members) members[k].classList.remove('active');
+}
+
+tabs.forEach((b, i) => b.onclick = () => loadSong(i));
+loadSong(0);
 
 function update() {
   const t = audio.currentTime;
@@ -195,8 +288,14 @@ function update() {
       p.classList.toggle('now', i === c);
       p.classList.toggle('past', i < c);
     });
-    const line = c >= 0 ? LINES[c].s : '';
-    for (const k in members) members[k].classList.toggle('active', line.includes(NAMES[k]));
+    const line = c >= 0 ? song.lines[c].s : '';
+    const all = (song.allWords || []).some(w => line.includes(w));
+    for (const k in members) {
+      const name = song.names[k];
+      const ch = song.chars && song.chars[k];
+      const on = all || (!!name && line.includes(name)) || (!!ch && line.includes(ch));
+      members[k].classList.toggle('active', on);
+    }
     if (c >= 0) ps[c].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
   fill.style.width = (audio.duration ? t / audio.duration * 100 : 0) + '%';
@@ -215,7 +314,7 @@ bar.onclick = e => {
   audio.currentTime = (e.clientX - r.left) / r.width * (audio.duration || 0);
 };
 
-function save() { localStorage.setItem(KEY, JSON.stringify(times)); }
+function save() { localStorage.setItem(song.id + '-times', JSON.stringify(times)); }
 function updateHint() {
   hintText.textContent = syncing
     ? '校正模式｜按空白為第 ' + (syncIdx + 1) + ' / ' + times.length + ' 行蓋上目前時間（Esc 結束）'
@@ -240,8 +339,8 @@ function stamp() {
 }
 document.getElementById('stamp').onclick = stamp;
 document.getElementById('reset').onclick = () => {
-  localStorage.removeItem(KEY);
-  times = LINES.map(l => l.t);
+  localStorage.removeItem(song.id + '-times');
+  times = song.lines.map(l => l.t);
   syncIdx = 0;
   updateHint();
 };

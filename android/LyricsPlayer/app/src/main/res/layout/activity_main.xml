@@ -13,7 +13,45 @@
         android:paddingTop="24dp"
         android:paddingBottom="10dp">
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <Button
+                android:id="@+id/tabSong1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginEnd="5dp"
+                android:text="最瞎結婚理由"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="鋒塗力百年夢"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+        </LinearLayout>
+
         <TextView
+            android:id="@+id/songTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="最瞎結婚理由"
@@ -22,6 +60,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/songSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線"

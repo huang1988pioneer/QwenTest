@@ -2,5 +2,7 @@ bin/
 obj/
 .gradle/
 build/
+publish/
+release-assets/
 .idea/
 local.properties
