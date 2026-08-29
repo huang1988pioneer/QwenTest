@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="LyricsPlayer.MainWindow"
         Title="動態歌詞播放器"
+        Icon="avares://LyricsPlayer/Assets/app-icon.png"
         Width="500" Height="800" MinWidth="380" MinHeight="600"
         FontFamily="Microsoft JhengHei, PingFang TC, sans-serif">
     <DockPanel Background="#171130">
@@ -19,40 +20,38 @@
             </WrapPanel>
             <TextBlock x:Name="TitleText" Text="最瞎結婚理由" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="12,0" FontSize="32" FontWeight="Bold" Foreground="#FFD75E" />
             <TextBlock x:Name="SubtitleText" Text="鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="12,0" FontSize="13" Foreground="#C9B6E4" />
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,14,0,0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="18">
-                <StackPanel x:Name="AvatarFeng" Spacing="6" Opacity="0.5">
+            <WrapPanel HorizontalAlignment="Center" Margin="0,14,0,0">
+                <StackPanel x:Name="AvatarFeng" Margin="9,0" Spacing="6" Opacity="0.5">
                     <Border x:Name="BorderFeng" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
                         <Image Source="avares://LyricsPlayer/Assets/feng.png" Stretch="UniformToFill" />
                     </Border>
                     <TextBlock Text="鋒兄" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
                 </StackPanel>
-                <StackPanel x:Name="AvatarTu" Spacing="6" Opacity="0.5">
+                <StackPanel x:Name="AvatarTu" Margin="9,0" Spacing="6" Opacity="0.5">
                     <Border x:Name="BorderTu" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
                         <Image Source="avares://LyricsPlayer/Assets/tu.png" Stretch="UniformToFill" />
                     </Border>
                     <TextBlock Text="小塗" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
                 </StackPanel>
-                <StackPanel x:Name="AvatarYa" Spacing="6" Opacity="0.5">
+                <StackPanel x:Name="AvatarYa" Margin="9,0" Spacing="6" Opacity="0.5">
                     <Border x:Name="BorderYa" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
                         <Image Source="avares://LyricsPlayer/Assets/ya.png" Stretch="UniformToFill" />
                     </Border>
                     <TextBlock Text="牙妹" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
                 </StackPanel>
-                <StackPanel x:Name="AvatarYu" Spacing="6" Opacity="0.5">
+                <StackPanel x:Name="AvatarYu" Margin="9,0" Spacing="6" Opacity="0.5">
                     <Border x:Name="BorderYu" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
                         <Image Source="avares://LyricsPlayer/Assets/yu.png" Stretch="UniformToFill" />
                     </Border>
                     <TextBlock Text="魚妹" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
                 </StackPanel>
-                <StackPanel x:Name="AvatarMiao" Spacing="6" Opacity="0.5">
+                <StackPanel x:Name="AvatarMiao" Margin="9,0" Spacing="6" Opacity="0.5">
                     <Border x:Name="BorderMiao" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
                         <Image Source="avares://LyricsPlayer/Assets/miao.png" Stretch="UniformToFill" />
                     </Border>
                     <TextBlock Text="喵布布" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
                 </StackPanel>
-            </StackPanel>
-            </ScrollViewer>
+            </WrapPanel>
         </StackPanel>
 
         <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="12,10">

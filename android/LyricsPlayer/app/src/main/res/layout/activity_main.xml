@@ -181,29 +181,22 @@
             android:textSize="13sp"
             android:layout_marginTop="4dp" />
 
-        <HorizontalScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
+            android:orientation="horizontal"
             android:layout_marginTop="14dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
-
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginStart="9dp"
-                android:layout_marginEnd="9dp">
+                android:gravity="center_horizontal">
                 <ImageView
                     android:id="@+id/avatar_feng"
-                    android:layout_width="76dp"
-                    android:layout_height="76dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:src="@drawable/feng"
                     android:scaleType="centerCrop"
                     android:contentDescription="鋒兄" />
@@ -217,16 +210,15 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginStart="9dp"
-                android:layout_marginEnd="9dp">
+                android:gravity="center_horizontal">
                 <ImageView
                     android:id="@+id/avatar_tu"
-                    android:layout_width="76dp"
-                    android:layout_height="76dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:src="@drawable/tu"
                     android:scaleType="centerCrop"
                     android:contentDescription="小塗" />
@@ -240,16 +232,15 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginStart="9dp"
-                android:layout_marginEnd="9dp">
+                android:gravity="center_horizontal">
                 <ImageView
                     android:id="@+id/avatar_ya"
-                    android:layout_width="76dp"
-                    android:layout_height="76dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:src="@drawable/ya"
                     android:scaleType="centerCrop"
                     android:contentDescription="牙妹" />
@@ -263,16 +254,15 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginStart="9dp"
-                android:layout_marginEnd="9dp">
+                android:gravity="center_horizontal">
                 <ImageView
                     android:id="@+id/avatar_yu"
-                    android:layout_width="76dp"
-                    android:layout_height="76dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:src="@drawable/yu"
                     android:scaleType="centerCrop"
                     android:contentDescription="魚妹" />
@@ -286,16 +276,15 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginStart="9dp"
-                android:layout_marginEnd="9dp">
+                android:gravity="center_horizontal">
                 <ImageView
                     android:id="@+id/avatar_miao"
-                    android:layout_width="76dp"
-                    android:layout_height="76dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:src="@drawable/miao"
                     android:scaleType="centerCrop"
                     android:contentDescription="喵布布" />
@@ -308,7 +297,6 @@
                     android:layout_marginTop="6dp" />
             </LinearLayout>
         </LinearLayout>
-        </HorizontalScrollView>
     </LinearLayout>
 
     <ScrollView
