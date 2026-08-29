@@ -4,5 +4,7 @@ obj/
 build/
 publish/
 release-assets/
+dist/
+verify-build*/
 .idea/
 local.properties
