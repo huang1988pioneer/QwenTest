@@ -6,12 +6,14 @@ import android.graphics.Outline
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.view.WindowInsets
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -57,6 +59,31 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // targetSdk 35 起強制 edge-to-edge，內容會畫到系統列後方：
+        // 頂部讓出狀態列、底部播放列讓出導覽列，避免被系統按鍵遮住。
+        val rootLayout = findViewById<LinearLayout>(R.id.rootLayout)
+        val playerBar = findViewById<LinearLayout>(R.id.playerBar)
+        rootLayout.setOnApplyWindowInsetsListener { v, insets ->
+            val top: Int
+            val bottom: Int
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val bars = insets.getInsets(WindowInsets.Type.systemBars())
+                top = bars.top
+                bottom = bars.bottom
+            } else {
+                @Suppress("DEPRECATION")
+                top = insets.systemWindowInsetTop
+                @Suppress("DEPRECATION")
+                bottom = insets.systemWindowInsetBottom
+            }
+            v.setPadding(0, top, 0, 0)
+            playerBar.setPadding(
+                playerBar.paddingLeft, playerBar.paddingTop,
+                playerBar.paddingRight, dp(12) + bottom
+            )
+            WindowInsets.CONSUMED
+        }
 
         lyricsScroll = findViewById(R.id.lyricsScroll)
         lyricsContainer = findViewById(R.id.lyricsContainer)
