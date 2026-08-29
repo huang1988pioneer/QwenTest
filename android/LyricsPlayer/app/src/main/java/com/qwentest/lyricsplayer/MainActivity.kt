@@ -1,6 +1,8 @@
 package com.qwentest.lyricsplayer
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.Typeface
@@ -128,7 +130,10 @@ class MainActivity : Activity() {
 
         playBtn.setOnClickListener {
             if (!prepared) return@setOnClickListener
-            if (player.isPlaying) player.pause() else player.start()
+            if (player.isPlaying) player.pause() else {
+                player.start()
+                onPlaybackStarted()
+            }
         }
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -179,12 +184,16 @@ class MainActivity : Activity() {
             tv.setOnClickListener {
                 if (!prepared) return@setOnClickListener
                 player.seekTo(song.lines[i].timeMs)
-                if (!player.isPlaying) player.start()
+                if (!player.isPlaying) {
+                    player.start()
+                    onPlaybackStarted()
+                }
             }
             lyricsContainer.addView(tv)
         }
         lyricsScroll.scrollTo(0, 0)
         for ((key, _) in avatars) setAvatarState(key, false)
+        if (PlaybackService.active) PlaybackService.push(this, song.title, song.subtitle)
 
         try {
             if (!::player.isInitialized) {
@@ -212,6 +221,18 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun onPlaybackStarted() {
+        ensureNotificationPermission()
+        PlaybackService.push(this, song.title, song.subtitle)
+    }
+
+    private fun ensureNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        }
+    }
+
     private fun styleTab(btn: Button, active: Boolean) {
         btn.background = GradientDrawable().apply {
             cornerRadius = dp(16).toFloat()
@@ -224,6 +245,17 @@ class MainActivity : Activity() {
 
     private fun update() {
         if (!prepared) return
+
+        // 消費通知列／媒體鍵的待處理指令（播放／暫停、時間軸拖曳）
+        when (PlaybackService.consumeCommand()) {
+            "toggle" -> if (player.isPlaying) player.pause() else {
+                player.start()
+                onPlaybackStarted()
+            }
+        }
+        val seekTarget = PlaybackService.consumeSeek()
+        if (seekTarget >= 0) player.seekTo(seekTarget.toInt())
+
         val pos = player.currentPosition
         var c = -1
         for (i in song.lines.indices) {
@@ -236,6 +268,7 @@ class MainActivity : Activity() {
             if (c >= 0) centerOn(c)
         }
         if (!dragging) seekBar.progress = pos
+        PlaybackService.instance?.updatePlayback(pos, player.duration, player.isPlaying)
         timeLabel.text = "${fmt(pos)} / ${fmt(player.duration)}"
         playBtn.text = if (player.isPlaying) "⏸" else "▶"
     }
@@ -306,6 +339,7 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
+        PlaybackService.stop(this)
         if (::player.isInitialized) player.release()
         super.onDestroy()
     }
