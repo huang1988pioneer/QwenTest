@@ -6,13 +6,21 @@
         FontFamily="Microsoft JhengHei, PingFang TC, sans-serif">
     <DockPanel Background="#171130">
         <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,24,0,10">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,0,0,12">
-                <Button x:Name="TabSong1" Content="最瞎結婚理由" FontSize="13" Padding="16,6" MinHeight="0" />
-                <Button x:Name="TabSong2" Content="鋒塗力百年夢" FontSize="13" Padding="16,6" MinHeight="0" />
-            </StackPanel>
-            <TextBlock x:Name="TitleText" Text="最瞎結婚理由" HorizontalAlignment="Center" FontSize="32" FontWeight="Bold" Foreground="#FFD75E" />
-            <TextBlock x:Name="SubtitleText" Text="鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線" HorizontalAlignment="Center" FontSize="13" Foreground="#C9B6E4" />
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="18" Margin="0,14,0,0">
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,7">
+                <Button x:Name="TabSong1" Content="最瞎結婚理由" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong2" Content="鋒塗力百年夢" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong3" Content="水電進化 Show" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong4" Content="喵布布本喵掉的毛" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong5" Content="鋒兄的傳奇人生" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong6" Content="塗哥水電王子爆紅" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong7" Content="鋒兄進化 Show！🔥" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong8" Content="我與國中畢業紀念冊的對話" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+                <Button x:Name="TabSong9" Content="統一發票頭獎得主鋒兄威力彩頭獎得主塗哥" FontSize="13" Padding="16,6" MinHeight="0" Margin="5" />
+            </WrapPanel>
+            <TextBlock x:Name="TitleText" Text="最瞎結婚理由" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="12,0" FontSize="32" FontWeight="Bold" Foreground="#FFD75E" />
+            <TextBlock x:Name="SubtitleText" Text="鋒兄 × 小塗 × 牙妹 × 魚妹｜今彩五三九牽紅線" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="12,0" FontSize="13" Foreground="#C9B6E4" />
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,14,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="18">
                 <StackPanel x:Name="AvatarFeng" Spacing="6" Opacity="0.5">
                     <Border x:Name="BorderFeng" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
                         <Image Source="avares://LyricsPlayer/Assets/feng.png" Stretch="UniformToFill" />
@@ -37,7 +45,14 @@
                     </Border>
                     <TextBlock Text="魚妹" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
                 </StackPanel>
+                <StackPanel x:Name="AvatarMiao" Spacing="6" Opacity="0.5">
+                    <Border x:Name="BorderMiao" Width="76" Height="76" CornerRadius="38" ClipToBounds="True" BorderThickness="3" BorderBrush="#4A3768" Background="#241436">
+                        <Image Source="avares://LyricsPlayer/Assets/miao.png" Stretch="UniformToFill" />
+                    </Border>
+                    <TextBlock Text="喵布布" HorizontalAlignment="Center" FontSize="13" Foreground="#F4ECFF" />
+                </StackPanel>
             </StackPanel>
+            </ScrollViewer>
         </StackPanel>
 
         <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="12,10">

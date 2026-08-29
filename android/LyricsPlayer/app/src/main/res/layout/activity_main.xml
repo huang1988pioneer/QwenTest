@@ -13,11 +13,18 @@
         android:paddingTop="24dp"
         android:paddingBottom="10dp">
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="12dp">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
 
             <Button
                 android:id="@+id/tabSong1"
@@ -48,7 +55,113 @@
                 android:text="鋒塗力百年夢"
                 android:textSize="13sp"
                 android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="水電進化 Show"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="喵布布本喵掉的毛"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="鋒兄的傳奇人生"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="塗哥水電王子爆紅"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="鋒兄進化 Show！🔥"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="我與國中畢業紀念冊的對話"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/tabSong9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="5dp"
+                android:text="統一發票頭獎得主鋒兄威力彩頭獎得主塗哥"
+                android:textSize="13sp"
+                android:stateListAnimator="@null" />
         </LinearLayout>
+        </HorizontalScrollView>
 
         <TextView
             android:id="@+id/songTitle"
@@ -68,11 +181,17 @@
             android:textSize="13sp"
             android:layout_marginTop="4dp" />
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginTop="14dp">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="14dp">
+            android:layout_gravity="center_horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -165,7 +284,31 @@
                     android:textSize="12sp"
                     android:layout_marginTop="6dp" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginStart="9dp"
+                android:layout_marginEnd="9dp">
+                <ImageView
+                    android:id="@+id/avatar_miao"
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
+                    android:src="@drawable/miao"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="喵布布" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="喵布布"
+                    android:textColor="#F4ECFF"
+                    android:textSize="12sp"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
         </LinearLayout>
+        </HorizontalScrollView>
     </LinearLayout>
 
     <ScrollView

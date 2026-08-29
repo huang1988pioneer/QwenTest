@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
 using NAudio.Wave;
 
@@ -40,9 +43,17 @@ public partial class MainWindow : Window
         _avatars["小塗"] = (AvatarTu, BorderTu);
         _avatars["牙妹"] = (AvatarYa, BorderYa);
         _avatars["魚妹"] = (AvatarYu, BorderYu);
+        _avatars["喵布布"] = (AvatarMiao, BorderMiao);
 
         TabSong1.Click += (_, _) => LoadSong(0);
         TabSong2.Click += (_, _) => LoadSong(1);
+        TabSong3.Click += (_, _) => LoadSong(2);
+        TabSong4.Click += (_, _) => LoadSong(3);
+        TabSong5.Click += (_, _) => LoadSong(4);
+        TabSong6.Click += (_, _) => LoadSong(5);
+        TabSong7.Click += (_, _) => LoadSong(6);
+        TabSong8.Click += (_, _) => LoadSong(7);
+        TabSong9.Click += (_, _) => LoadSong(8);
 
         PlayBtn.Click += (_, _) => TogglePlay();
 
@@ -59,6 +70,13 @@ public partial class MainWindow : Window
             _timer.Stop();
             _output?.Dispose();
             _reader?.Dispose();
+        };
+
+        PropertyChanged += (_, e) =>
+        {
+            if (e.Property != BoundsProperty) return;
+            for (var i = 0; i < _lyricBlocks.Count; i++)
+                _lyricBlocks[i].Text = BreakAtSpaces(_song.Lines[i].Text, i == _currentLine);
         };
 
         LoadSong(0);
@@ -86,6 +104,13 @@ public partial class MainWindow : Window
         Title = $"{_song.Title}｜動態歌詞";
         StyleTab(TabSong1, index == 0);
         StyleTab(TabSong2, index == 1);
+        StyleTab(TabSong3, index == 2);
+        StyleTab(TabSong4, index == 3);
+        StyleTab(TabSong5, index == 4);
+        StyleTab(TabSong6, index == 5);
+        StyleTab(TabSong7, index == 6);
+        StyleTab(TabSong8, index == 7);
+        StyleTab(TabSong9, index == 8);
 
         LyricsPanel.Children.Clear();
         _lyricBlocks.Clear();
@@ -93,8 +118,9 @@ public partial class MainWindow : Window
         {
             var tb = new TextBlock
             {
-                Text = line.Text,
+                Text = BreakAtSpaces(line.Text, false),
                 TextAlignment = TextAlignment.Center,
+                TextWrapping = TextWrapping.Wrap,
                 Foreground = FutureBrush,
                 FontSize = 18,
                 Margin = new Thickness(0, 9),
@@ -208,6 +234,7 @@ public partial class MainWindow : Window
                     tb.FontSize = 18;
                     tb.FontWeight = FontWeight.Regular;
                 }
+                tb.Text = BreakAtSpaces(_song.Lines[i].Text, i == c);
             }
 
             var line = c >= 0 ? _song.Lines[c].Text : "";
@@ -218,9 +245,16 @@ public partial class MainWindow : Window
             }
             foreach (var kv in _avatars)
             {
+                var excluded = _song.AvatarExclude is not null
+                    && _song.AvatarExclude.TryGetValue(kv.Key, out var excl)
+                    && excl.Any(p => line.Contains(p));
                 var active = allActive
-                    || (_song.AvatarNames.TryGetValue(kv.Key, out var name) && line.Contains(name))
-                    || (_song.CharTriggers.TryGetValue(kv.Key, out var ch) && line.Contains(ch));
+                    || (!excluded && (
+                        (_song.AvatarNames.TryGetValue(kv.Key, out var name) && line.Contains(name))
+                        || (_song.CharTriggers.TryGetValue(kv.Key, out var ch) && line.Contains(ch))
+                        || (_song.AvatarKeywords is not null
+                            && _song.AvatarKeywords.TryGetValue(kv.Key, out var kws)
+                            && kws.Any(w => line.Contains(w)))));
                 kv.Value.Panel.Opacity = active ? 1 : 0.5;
                 kv.Value.Border.BorderBrush = active ? ActiveBorder : IdleBorder;
             }
@@ -245,5 +279,38 @@ public partial class MainWindow : Window
     {
         var sec = Math.Max(0, (int)Math.Floor(s));
         return $"{sec / 60}:{sec % 60:D2}";
+    }
+
+    private double LyricsMaxWidth => (LyricsScroll.Bounds.Width > 0 ? LyricsScroll.Bounds.Width : Width) - 40;
+
+    private double Measure(string s, double size, FontWeight weight)
+    {
+        var tl = new TextLayout(s, new Typeface(FontFamily, FontStyle.Normal, weight), size, NowBrush);
+        return tl.Width;
+    }
+
+    // 預先測量：放得下保持原文；放不下在空白分隔段內插 U+2060，讓換行只發生在空白處
+    private string BreakAtSpaces(string raw, bool active)
+    {
+        var size = active ? 24d : 18d;
+        var weight = active ? FontWeight.Bold : FontWeight.Regular;
+        var max = LyricsMaxWidth;
+        if (Measure(raw, size, weight) <= max) return raw;
+        var sb = new StringBuilder(raw.Length * 2);
+        foreach (var part in raw.Split(' '))
+        {
+            if (sb.Length > 0) sb.Append(' ');
+            if (Measure(part, size, weight) > max)
+            {
+                sb.Append(part);
+                continue;
+            }
+            for (var j = 0; j < part.Length; j++)
+            {
+                if (j > 0) sb.Append((char)0x2060);
+                sb.Append(part[j]);
+            }
+        }
+        return sb.ToString();
     }
 }

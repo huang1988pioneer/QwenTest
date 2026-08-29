@@ -45,6 +45,13 @@ class MainActivity : Activity() {
     private lateinit var songSubtitle: TextView
     private lateinit var tabSong1: Button
     private lateinit var tabSong2: Button
+    private lateinit var tabSong3: Button
+    private lateinit var tabSong4: Button
+    private lateinit var tabSong5: Button
+    private lateinit var tabSong6: Button
+    private lateinit var tabSong7: Button
+    private lateinit var tabSong8: Button
+    private lateinit var tabSong9: Button
     private val avatars = LinkedHashMap<String, ImageView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,11 +67,19 @@ class MainActivity : Activity() {
         songSubtitle = findViewById(R.id.songSubtitle)
         tabSong1 = findViewById(R.id.tabSong1)
         tabSong2 = findViewById(R.id.tabSong2)
+        tabSong3 = findViewById(R.id.tabSong3)
+        tabSong4 = findViewById(R.id.tabSong4)
+        tabSong5 = findViewById(R.id.tabSong5)
+        tabSong6 = findViewById(R.id.tabSong6)
+        tabSong7 = findViewById(R.id.tabSong7)
+        tabSong8 = findViewById(R.id.tabSong8)
+        tabSong9 = findViewById(R.id.tabSong9)
 
         avatars["avatar_feng"] = findViewById(R.id.avatar_feng)
         avatars["avatar_tu"] = findViewById(R.id.avatar_tu)
         avatars["avatar_ya"] = findViewById(R.id.avatar_ya)
         avatars["avatar_yu"] = findViewById(R.id.avatar_yu)
+        avatars["avatar_miao"] = findViewById(R.id.avatar_miao)
         for ((key, iv) in avatars) {
             iv.outlineProvider = object : ViewOutlineProvider() {
                 override fun getOutline(view: View, outline: Outline) {
@@ -76,6 +91,13 @@ class MainActivity : Activity() {
 
         tabSong1.setOnClickListener { loadSong(0) }
         tabSong2.setOnClickListener { loadSong(1) }
+        tabSong3.setOnClickListener { loadSong(2) }
+        tabSong4.setOnClickListener { loadSong(3) }
+        tabSong5.setOnClickListener { loadSong(4) }
+        tabSong6.setOnClickListener { loadSong(5) }
+        tabSong7.setOnClickListener { loadSong(6) }
+        tabSong8.setOnClickListener { loadSong(7) }
+        tabSong9.setOnClickListener { loadSong(8) }
 
         playBtn.setOnClickListener {
             if (!prepared) return@setOnClickListener
@@ -111,6 +133,13 @@ class MainActivity : Activity() {
         songSubtitle.text = song.subtitle
         styleTab(tabSong1, index == 0)
         styleTab(tabSong2, index == 1)
+        styleTab(tabSong3, index == 2)
+        styleTab(tabSong4, index == 3)
+        styleTab(tabSong5, index == 4)
+        styleTab(tabSong6, index == 5)
+        styleTab(tabSong7, index == 6)
+        styleTab(tabSong8, index == 7)
+        styleTab(tabSong9, index == 8)
 
         lyricsContainer.removeAllViews()
         for ((i, line) in song.lines.withIndex()) {
@@ -213,7 +242,13 @@ class MainActivity : Activity() {
         for ((key, _) in avatars) {
             val name = song.characterNames[key]
             val ch = song.charTriggers[key]
-            val active = all || (name != null && text.contains(name)) || (ch != null && text.contains(ch))
+            val kws = song.characterKeywords[key]
+            val excl = song.characterExclude[key]
+            val excluded = excl != null && excl.any { text.contains(it) }
+            val personal = (name != null && text.contains(name))
+                || (ch != null && text.contains(ch))
+                || (kws != null && kws.any { text.contains(it) })
+            val active = all || (!excluded && personal)
             setAvatarState(key, active)
         }
     }
