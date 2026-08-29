@@ -63,6 +63,7 @@ class PlaybackService : Service() {
     private var lastPlaying = false
     private var durationMs = 0L
     private var positionMs = 0L
+    private var lastStatePushAt = 0L
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -108,25 +109,37 @@ class PlaybackService : Service() {
         }
     }
 
-    /** Activity 每個 tick 推一次：位置永遠更新到 MediaSession（驅動通知列時間軸），播放狀態或曲目變了才重建通知 */
+    /** Activity 每個 tick 推一次。Metadata 只在曲目變更時更新；播放狀態（含位置）最多每秒推送一次——
+     *  系統會用「位置＋速度」自行插值讓通知列時間軸前進，過度頻繁更新會讓狀態列／通知不停重繪（看起來像畫面一直刷新） */
     fun updatePlayback(positionMs: Int, durationMs: Int, playing: Boolean) {
         if (!active) return
         this.positionMs = positionMs.toLong()
         if (durationMs > 0) this.durationMs = durationMs.toLong()
-        updateSessionState(playing)
-        if (playing != lastPlaying) {
+
+        val now = android.os.SystemClock.elapsedRealtime()
+        val playingChanged = playing != lastPlaying
+        if (playingChanged || now - lastStatePushAt >= 1000) {
+            lastStatePushAt = now
+            updateMetadata()
+            updateSessionState(playing)
+        }
+        if (playingChanged) {
             lastPlaying = playing
             startForegroundWithNotification()
         }
     }
 
-    private fun updateSessionState(playing: Boolean) {
+    private fun updateMetadata() {
         val s = session ?: return
         s.setMetadata(android.media.MediaMetadata.Builder()
             .putString(android.media.MediaMetadata.METADATA_KEY_TITLE, lastTitle ?: "")
             .putString(android.media.MediaMetadata.METADATA_KEY_ARTIST, lastSubtitle ?: "")
             .putLong(android.media.MediaMetadata.METADATA_KEY_DURATION, durationMs)
             .build())
+    }
+
+    private fun updateSessionState(playing: Boolean) {
+        val s = session ?: return
         s.setPlaybackState(PlaybackState.Builder()
             .setActions(PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PAUSE
                 or PlaybackState.ACTION_SEEK_TO or PlaybackState.ACTION_STOP)
@@ -137,6 +150,7 @@ class PlaybackService : Service() {
     }
 
     private fun startForegroundWithNotification() {
+        updateMetadata()
         updateSessionState(lastPlaying)
 
         val openApp = PendingIntent.getActivity(
