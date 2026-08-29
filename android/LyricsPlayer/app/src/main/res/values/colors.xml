@@ -10,4 +10,5 @@
     <color name="subtitle">#C9B6E4</color>
     <color name="avatar_border_dim">#4A3768</color>
     <color name="player_bg">#CC140C28</color>
+    <color name="ic_launcher_background">#241436</color>
 </resources>

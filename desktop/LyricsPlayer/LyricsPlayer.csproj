@@ -4,6 +4,7 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,5 +51,6 @@
     <AvaloniaResource Include="Assets/ya.png" />
     <AvaloniaResource Include="Assets/yu.png" />
     <AvaloniaResource Include="Assets/miao.png" />
+    <AvaloniaResource Include="Assets/app-icon.png" />
   </ItemGroup>
 </Project>

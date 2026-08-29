@@ -8,3 +8,4 @@ dist/
 verify-build*/
 .idea/
 local.properties
+.kotlin/
